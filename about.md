@@ -4,8 +4,10 @@ title: About
 permalink: /about/
 ---
 
-A medium inspired Jekyll blog theme. The basic idea came from the Ghost theme 
-[Readium 2.0](http://www.svenread.com/readium-ghost-theme/). I use mediator on my own blog [The Base](blog.base68.com).
+Hi, thanks for stumbling by on my website. My name is Shubham and I work as a Product Manager at one of India's biggest stock brokers. I'm a curious individual interested in stock markets, mathematics, philosophy, sports, technology and everything under the sun.
+I was an active quizzerin my college days and can still be found reading and sharing obscure trivia all the time.
+
+
 
 You can **download** the theme here:
 [https://github.com/dirkfabisch/mediator](https://github.com/dirkfabisch/mediator) 
