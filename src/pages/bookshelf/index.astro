@@ -1,0 +1,41 @@
+---
+import Base from '../../layouts/Base.astro';
+import BookCard from '../../components/BookCard.astro';
+import { getCollection } from 'astro:content';
+
+const all = await getCollection('bookshelf');
+
+const groups: { key: 'reading' | 'read' | 'want-to-read'; label: string }[] = [
+  { key: 'reading', label: 'Currently Reading' },
+  { key: 'read', label: 'Read' },
+  { key: 'want-to-read', label: 'Want to Read' },
+];
+
+const grouped = groups.map((g) => ({
+  ...g,
+  books: all
+    .filter((b) => b.data.status === g.key)
+    .sort((a, b) => {
+      const ad = a.data.dateFinished?.getTime() ?? 0;
+      const bd = b.data.dateFinished?.getTime() ?? 0;
+      if (bd !== ad) return bd - ad;
+      return a.data.title.localeCompare(b.data.title);
+    }),
+}));
+---
+
+<Base title="Bookshelf — Shubham" description="Books Shubham has read or is reading.">
+  <h1>Bookshelf</h1>
+  {all.length === 0 ? (
+    <p class="muted">No books yet.</p>
+  ) : (
+    grouped.map((g) => g.books.length > 0 && (
+      <section>
+        <h2 id={g.key}>{g.label}</h2>
+        <div class="grid">
+          {g.books.map((entry) => <BookCard entry={entry} />)}
+        </div>
+      </section>
+    ))
+  )}
+</Base>

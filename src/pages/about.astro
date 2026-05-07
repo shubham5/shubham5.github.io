@@ -1,0 +1,17 @@
+---
+import Base from '../layouts/Base.astro';
+import { getEntry, render } from 'astro:content';
+
+const entry = await getEntry('about', 'index');
+if (!entry) {
+  throw new Error('Missing src/content/about/index.md');
+}
+const { Content } = await render(entry);
+---
+
+<Base title="About — Shubham" description="About Shubham">
+  <article>
+    <h1>{entry.data.title}</h1>
+    <Content />
+  </article>
+</Base>

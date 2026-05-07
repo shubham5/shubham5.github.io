@@ -1,0 +1,18 @@
+---
+import Base from '../../layouts/Base.astro';
+import WritingCard from '../../components/WritingCard.astro';
+import { getCollection } from 'astro:content';
+
+const isProd = import.meta.env.PROD;
+const writings = (await getCollection('writings', ({ data }) => !isProd || !data.draft))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+---
+
+<Base title="Writings — Shubham" description="Essays and notes by Shubham.">
+  <h1>Writings</h1>
+  {writings.length === 0 ? (
+    <p class="muted">No posts yet.</p>
+  ) : (
+    writings.map((entry) => <WritingCard entry={entry} />)
+  )}
+</Base>

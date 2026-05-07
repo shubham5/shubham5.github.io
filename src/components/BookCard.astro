@@ -1,0 +1,29 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  entry: CollectionEntry<'bookshelf'>;
+}
+
+const { entry } = Astro.props;
+const { title, author, rating, cover } = entry.data;
+const stars = rating ? '★'.repeat(rating) + '☆'.repeat(5 - rating) : null;
+---
+
+<a href={`/bookshelf/${entry.id}`} class="card book-card">
+  {cover ? (
+    <img src={cover} alt={`Cover of ${title}`} class="cover" loading="lazy" />
+  ) : (
+    <div class="cover" aria-hidden="true"></div>
+  )}
+  <h3>{title}</h3>
+  <div class="muted small">{author}</div>
+  {stars && <div class="rating" aria-label={`Rated ${rating} out of 5`}>{stars}</div>}
+</a>
+
+<style>
+  h3 {
+    font-size: 1rem;
+    margin: 0 0 0.15rem;
+  }
+</style>

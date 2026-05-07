@@ -1,0 +1,77 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('bookshelf');
+  return entries.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+interface Props {
+  entry: CollectionEntry<'bookshelf'>;
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const { title, author, status, rating, cover, dateFinished } = entry.data;
+
+const statusLabels: Record<typeof status, string> = {
+  reading: 'Currently Reading',
+  read: 'Read',
+  'want-to-read': 'Want to Read',
+};
+
+const stars = rating ? '★'.repeat(rating) + '☆'.repeat(5 - rating) : null;
+const formattedDate = dateFinished?.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
+});
+---
+
+<Base title={`${title} — Bookshelf`} description={`${title} by ${author}`}>
+  <article class="book">
+    {cover && <img src={cover} alt={`Cover of ${title}`} class="book-cover" />}
+    <div class="book-meta">
+      <h1>{title}</h1>
+      <p class="muted">by {author}</p>
+      <p class="small muted">
+        {statusLabels[status]}
+        {formattedDate && ` · finished ${formattedDate}`}
+      </p>
+      {stars && <p class="rating" aria-label={`Rated ${rating} out of 5`}>{stars}</p>}
+    </div>
+  </article>
+  <hr />
+  <Content />
+  <p class="muted small"><a href="/bookshelf">← All books</a></p>
+</Base>
+
+<style>
+  .book {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 1.5rem;
+    align-items: start;
+  }
+  .book-cover {
+    width: 160px;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+    border-radius: 4px;
+  }
+  .book-meta h1 {
+    margin: 0 0 0.25rem;
+  }
+  @media (max-width: 480px) {
+    .book {
+      grid-template-columns: 1fr;
+    }
+    .book-cover {
+      width: 140px;
+    }
+  }
+</style>

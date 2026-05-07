@@ -1,0 +1,61 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('projects');
+  return entries.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+interface Props {
+  entry: CollectionEntry<'projects'>;
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const { title, description, url, repo, date, tech } = entry.data;
+const formattedDate = date?.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'short',
+});
+---
+
+<Base title={`${title} — Projects`} description={description}>
+  <article>
+    <header>
+      <h1>{title}</h1>
+      <p class="muted">{description}</p>
+      {(url || repo || formattedDate) && (
+        <p class="small muted links">
+          {url && <a href={url} rel="noopener">Live</a>}
+          {repo && <a href={repo} rel="noopener">Repo</a>}
+          {formattedDate && <span>{formattedDate}</span>}
+        </p>
+      )}
+      {tech.length > 0 && (
+        <div class="tags">
+          {tech.map((t) => <span class="tag">{t}</span>)}
+        </div>
+      )}
+    </header>
+    <Content />
+  </article>
+  <p class="muted small"><a href="/projects">← All projects</a></p>
+</Base>
+
+<style>
+  header {
+    margin-bottom: 1.5rem;
+  }
+  .links {
+    display: flex;
+    gap: 1rem;
+    margin: 0.5rem 0;
+  }
+  .tags {
+    margin-top: 0.5rem;
+  }
+</style>

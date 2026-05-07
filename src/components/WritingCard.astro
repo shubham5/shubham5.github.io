@@ -1,0 +1,21 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  entry: CollectionEntry<'writings'>;
+}
+
+const { entry } = Astro.props;
+const { title, date, description } = entry.data;
+const formattedDate = date.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
+});
+---
+
+<article class="list-item">
+  <h3><a href={`/writings/${entry.id}`}>{title}</a></h3>
+  <div class="meta">{formattedDate}</div>
+  {description && <p class="muted">{description}</p>}
+</article>

@@ -1,0 +1,26 @@
+---
+import Base from '../../layouts/Base.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import { getCollection } from 'astro:content';
+
+const projects = (await getCollection('projects'))
+  .sort((a, b) => {
+    if (b.data.featured !== a.data.featured) {
+      return Number(b.data.featured) - Number(a.data.featured);
+    }
+    const ad = a.data.date?.getTime() ?? 0;
+    const bd = b.data.date?.getTime() ?? 0;
+    return bd - ad;
+  });
+---
+
+<Base title="Projects — Shubham" description="Projects by Shubham.">
+  <h1>Projects</h1>
+  {projects.length === 0 ? (
+    <p class="muted">No projects yet.</p>
+  ) : (
+    <div class="grid">
+      {projects.map((entry) => <ProjectCard entry={entry} />)}
+    </div>
+  )}
+</Base>

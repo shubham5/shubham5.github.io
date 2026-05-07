@@ -1,0 +1,84 @@
+---
+import Base from '../layouts/Base.astro';
+import WritingCard from '../components/WritingCard.astro';
+import BookCard from '../components/BookCard.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import { getCollection } from 'astro:content';
+
+const isProd = import.meta.env.PROD;
+
+const writings = (await getCollection('writings', ({ data }) => !isProd || !data.draft))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 3);
+
+const books = (await getCollection('bookshelf'))
+  .filter((b) => b.data.status !== 'want-to-read')
+  .sort((a, b) => {
+    const ad = a.data.dateFinished?.getTime() ?? 0;
+    const bd = b.data.dateFinished?.getTime() ?? 0;
+    return bd - ad;
+  })
+  .slice(0, 3);
+
+const projects = (await getCollection('projects'))
+  .sort((a, b) => Number(b.data.featured) - Number(a.data.featured))
+  .slice(0, 3);
+---
+
+<Base>
+  <section class="hero">
+    <h1>Hi, I'm Shubham.</h1>
+    <p class="tagline">
+      Product Manager working in FinTech. Curious about markets, mathematics, philosophy, and obscure trivia.
+    </p>
+  </section>
+
+  {writings.length > 0 && (
+    <>
+      <div class="section-heading">
+        <h2>Recent writings</h2>
+        <a href="/writings" class="small">All →</a>
+      </div>
+      {writings.map((entry) => <WritingCard entry={entry} />)}
+    </>
+  )}
+
+  {books.length > 0 && (
+    <>
+      <div class="section-heading">
+        <h2>Recently read</h2>
+        <a href="/bookshelf" class="small">Bookshelf →</a>
+      </div>
+      <div class="grid">
+        {books.map((entry) => <BookCard entry={entry} />)}
+      </div>
+    </>
+  )}
+
+  {projects.length > 0 && (
+    <>
+      <div class="section-heading">
+        <h2>Projects</h2>
+        <a href="/projects" class="small">All →</a>
+      </div>
+      <div class="grid">
+        {projects.map((entry) => <ProjectCard entry={entry} />)}
+      </div>
+    </>
+  )}
+</Base>
+
+<style>
+  .hero {
+    padding: 1rem 0 1.5rem;
+  }
+  .hero h1 {
+    margin: 0 0 0.5rem;
+    font-size: 2.25rem;
+  }
+  .tagline {
+    color: var(--color-muted);
+    font-size: 1.1rem;
+    margin: 0;
+  }
+</style>
